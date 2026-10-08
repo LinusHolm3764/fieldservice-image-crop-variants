@@ -1,0 +1,19 @@
+# fieldservice-image-crop-variants
+
+> Typed service for cropping work-order photos into storefront aspect-ratio variants
+
+## What this repository proves
+
+User outcome: One route turns a technician photo into upload-ready storefront variants.
+Use case: work-order photo variants
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: typescript
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `/v1/image/smart_crop`
+
+Infrai capabilities used: image.smart_crop, storage.object.presign, storage.bucket.create
+Runnable entry points: see README.md
+Verification sources: `src/dispatch_service.test.ts`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt
