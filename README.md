@@ -1,8 +1,8 @@
 # Crop work-order photos for every storefront slot
 
-Field technicians send one photo from the road, while a storefront needs square, portrait, and banner crops. This example keeps that decision in one typed route: the request names a work order and its desired aspect ratios, and the response lists the ready variants.
+Techs in the field snap one photo per stop. The storefront frontend still wants square, portrait, and banner renders. We collapsed that fan-out into a single typed route: the request names a work order and its aspect ratios, and the response lists the ready variants.
 
-The service calls Infrai with one `INFRAI_API_KEY` for every capability and the same API base for image and storage operations. It uses an existing storage bucket, then each crop receives a presigned upload URL. The reusable pattern is ordinary HTTP, so the route is easy to copy into an existing checkout or dispatch backend.
+The service calls Infrai with one `INFRAI_API_KEY` for every capability and the same API base for image and storage ops. Each crop gets a presigned upload URL from an existing bucket. The reusable pattern is ordinary HTTP, so the route copies cleanly into a checkout or dispatch backend without an SDK.
 
 ## Run the route
 
@@ -23,7 +23,7 @@ curl -X POST http://localhost:3000/dispatch/crop \
   -d '{"workOrderId":"WO-1042","image":"data:image/jpeg;base64,...","variants":[{"name":"tile","aspect":"1:1"},{"name":"pdp","aspect":"4:5"},{"name":"hero","aspect":"16:9"}]}'
 ```
 
-The successful response has `status: "ready"` and one `uploadUrl` per requested ratio. The bucket name and object key are URL path segments in the presign call; the body carries `op`, expiry, content type, and an idempotency key for the write.
+The successful response has `status: "ready"` and one `uploadUrl` per requested ratio. Bucket name and object key go in as URL path segments on the presign call. The body carries `op`, expiry, content type, and an idempotency key for the write. We keep that key on retries after a missed-job page showed duplicate deliveries.
 
 ## Check the business rule
 
@@ -33,7 +33,7 @@ The focused test proves duplicate ratios collapse to one storefront variant and 
 npm test
 ```
 
-For static verification, run `npm run typecheck`. The route validates `workOrderId`, the base64 image string, and every variant with Zod before any remote call.
+For static verification, run `npm run typecheck`. The route validates `workOrderId`, the base64 image string, and every variant with Zod before any remote call. Fail-closed validation like this would have saved a postmortem.
 
 ## Files
 
